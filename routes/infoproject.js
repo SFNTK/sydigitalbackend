@@ -148,7 +148,8 @@ router.post("/add",  upload.fields([
         }
         imagettl = []
 
-        path2 = path.join(__dirname, `../assets/images/${logo}`)
+        path2 = path.join(__dirname, `../assets/logos/${logo}`)
+        console.log("changed")
         try {
             fs.unlinkSync(path2)
         } catch (err2) {
