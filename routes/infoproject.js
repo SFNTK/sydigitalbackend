@@ -6,6 +6,8 @@ const appointment=require('../models/appointments')
 
 const fs = require('fs');
 
+const sendemail=require("../emails/mail")
+
 const path = require('path');
 imagettl = []
 logo=""
@@ -134,6 +136,27 @@ router.post("/add",  upload.fields([
         await projectinfo.save()
         imagettl = []
         logo=""
+let imagesarr=[]
+for(let i=0;i<images.length;i++){
+    imagesarr.push(`https://sydigitalbackend.onrender.com/assets/images/${images[i]}`)
+}
+let logolink=`https://sydigitalbackend.onrender.com/assets/logos/${logo2}`        
+const messagecontact=`project info form data :
+        company name : ${companyname}
+    
+        old website : ${oldwebsite}
+    
+        policies : ${policies}
+    
+        social media : ${JSON.stringify(socialmedia)}
+    
+    les images : ${imagesarr.join(" , ")}
+
+    logo:  ${logolink}
+    
+        `
+
+        const response = await sendemail(messagecontact,"project informtions form data")
         return res.status(200).json({ "message": "all is good" })
     } catch (err) {
         let path1;
@@ -148,7 +171,7 @@ router.post("/add",  upload.fields([
         }
         imagettl = []
 
-        path2 = path.join(__dirname, `../assets/images/${logo}`)
+        path2 = path.join(__dirname, `../assets/logos/${logo}`)
         try {
             fs.unlinkSync(path2)
         } catch (err2) {
