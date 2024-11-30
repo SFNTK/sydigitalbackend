@@ -12,7 +12,7 @@ const appointmentsschema=new mongoose.Schema({
         required:true
     }, plan:{
         type:String,
-        required:true,enum:["basic","standard","premium"]
+        required:true,enum:["Basic Plan - $150","Standard Plan - $250","Premium Plan - $500"]
     }, pages:{
         type:[String],
         minlength:1,

@@ -2,15 +2,15 @@ const { json } = require('body-parser');
 const express = require('express');
 const router = express.Router();
 
-const appointment=require('../models/appointments')
+const appointment = require('../models/appointments')
 
 const fs = require('fs');
 
-const sendemail=require("../emails/mail")
+const sendemail = require("../emails/mail")
 
 const path = require('path');
 imagettl = []
-logo=""
+logo = ""
 
 errorImagelogo = false;
 errorImages = false;
@@ -30,14 +30,14 @@ const firstlogo = multer.diskStorage({
     filename: (req, file, callback) => {
         // let nameofpicture = `${req.body.username}-${Date.now()}.${file.mimetype.split("/")[1]}`;
         let nameofpicture = `${Date.now()}${Math.floor(1000 + Math.random() * 9000)}.${file.mimetype.split("/")[1]}`;
-       
-if(file.fieldname==="images"){
-    imagettl.push(nameofpicture)
-}else{
-    logo=nameofpicture
-}
 
-      
+        if (file.fieldname === "images") {
+            imagettl.push(nameofpicture)
+        } else {
+            logo = nameofpicture
+        }
+
+
         callback(null, nameofpicture)
 
     }
@@ -97,51 +97,52 @@ const checkimages = multer({
     }
 })
 
-const modelinfo=require('../models/project-info')
+const modelinfo = require('../models/project-info')
 
-const socialmidle=async(req,res,next)=>{
-    try{
-const social=JSON.parse(req.body.socialmedia)
-req.body.socialmedia=social
-next()
-    }catch(err){
+const socialmidle = async (req, res, next) => {
+    try {
+        const social = JSON.parse(req.body.socialmedia)
+        req.body.socialmedia = social
+        next()
+    } catch (err) {
+        console.log(err.message)
         return res.status(400).json({ message: err.message })
     }
 }
 
-router.post("/add",  upload.fields([
+router.post("/add", upload.fields([
     { name: "logo", maxCount: 1 }, // Single logo
     { name: "images", maxCount: 90 }, // Multiple images for posts
-]),socialmidle, async (req, res) => {
-    if (errorImages == true || errorImagelogo==true) {
+]), socialmidle, async (req, res) => {
+    if (errorImages == true || errorImagelogo == true) {
         errorImages = false;
-        errorImagelogo=false;
-        return res.json({ "message": "type error" })
+        errorImagelogo = false;
+        return res.status(400).json({ "message": "type error" })
     }
-    if (imagettl.length == 0) {
+  /*  if (imagettl.length == 0) {
         return res.json({ message: "upload at least one image " })
 
 
-    }
-  
+    }*/
+
     try {
         const companyname = req.body.companyname
         const oldwebsite = req.body.oldwebsite
         const images = imagettl
-        const logo2=logo
+        const logo2 = logo
         const socialmedia = req.body.socialmedia
         const policies = req.body.policies
-      //  const logo = logo
-        const projectinfo = await modelinfo({ companyname: companyname, oldwebsite: oldwebsite, images: images, socialmedia: socialmedia, policies: policies,logo:logo2 })
+        //  const logo = logo
+        const projectinfo = await modelinfo({ companyname: companyname, oldwebsite: oldwebsite, images: images, socialmedia: socialmedia, policies: policies, logo: logo2 })
         await projectinfo.save()
         imagettl = []
-        logo=""
-let imagesarr=[]
-for(let i=0;i<images.length;i++){
-    imagesarr.push(`https://sydigitalbackend.onrender.com/assets/images/${images[i]}`)
-}
-let logolink=`https://sydigitalbackend.onrender.com/assets/logos/${logo2}`        
-const messagecontact=`project info form data :
+        logo = ""
+        let imagesarr = []
+        for (let i = 0; i < images.length; i++) {
+            imagesarr.push(`https://sydigitalbackend.onrender.com/assets/images/${images[i]}`)
+        }
+        let logolink = `https://sydigitalbackend.onrender.com/assets/logos/${logo2}`
+        const messagecontact = `project info form data :
         company name : ${companyname}
     
         old website : ${oldwebsite}
@@ -156,7 +157,7 @@ const messagecontact=`project info form data :
     
         `
 
-        const response = await sendemail(messagecontact,"project informtions form data")
+        const response = await sendemail(messagecontact, "project informtions form data")
         return res.status(200).json({ "message": "all is good" })
     } catch (err) {
         let path1;
@@ -176,10 +177,13 @@ const messagecontact=`project info form data :
             fs.unlinkSync(path2)
         } catch (err2) {
             logo = ""
-            return res.json({ message: err2.message + " hna" })
+            console.log(err2)
+            return res.status(400).json({ message: err2.message + " hna" })
+
         }
-   logo=""
-        return res.json({ "message": err.message + " hna2" })
+        logo = ""
+        console.log(err)
+        return res.status(400).json({ "message": err.message + " hna2" })
     }
 
 

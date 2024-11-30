@@ -4,15 +4,15 @@ const infoschema=new mongoose.Schema({
     companyname:{
         type:String,required:true
     },   oldwebsite:{
-        type:String,required:true
+        type:String,required:false
     },   logo:{
-        type:String,required:true
+        type:String,required:false
     },   images:{
-        type:[String],required:true
+        type:[String],required:false
     }   ,socialmedia:{
-        type:[{name:String,link:String}],required:true
+        type:[{name:String,link:String}],required:false
     },   policies:{
-        type:String,required:true
+        type:String,required:false
     }
 
 },{timestamps:{createdAt:"created_at",updatedAt:"updated_at"}})

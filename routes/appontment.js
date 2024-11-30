@@ -21,7 +21,7 @@ router.post("/add", async (req, res) => {
 
         await booking.save()
         const pagesstring = pages.join(' , ');
-        const messagecontact = `contact form data :
+        const messagecontact = `appointement form data :
 
     Name : ${name}
 
@@ -40,7 +40,10 @@ router.post("/add", async (req, res) => {
 
 
     } catch (err) {
-        return res.json({ "message": err.message })
+        console.log(err)
+        console.log(err.message)
+        return res.status(400).json({ "message": err.message })
+       
     }
 
 })
